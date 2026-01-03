@@ -1,6 +1,12 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+// app.js
+// Инициализация на Supabase клиентът и експортиране като window.sb
 const SUPABASE_URL = "https://dtrokaqhgupubrofnndx.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0cm9rYXFoZ3VwdWJyb2ZubmR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ0Mjk5OTYsImV4cCI6MjA4MDAwNTk5Nn0.JZ11fSKeObYIH-Z3Rt2S8dcS4gIN9jmUp7sMRdcUwko";
+// Постави тук своя публичен ANON key (Project -> Settings -> API -> anon public key)
+const SUPABASE_ANON_KEY = "sb_publishable_0cE5BWmw5vn5IIf_HJzmFg_IeTtaRz5";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+if (!window?.supabase) {
+  console.error("Supabase library not loaded. Make sure you include the CDN script before app.js");
+} else {
+  // Създаваме клиент и го правим достъпен глобално като window.sb
+  window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
