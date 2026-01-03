@@ -1,1 +1,82 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Материали</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+<h1>Материали</h1>
+
+<p id="status">Зареждане...</p>
+
+<button id="logoutBtn">Изход</button>
+<ul id="materialsList"></ul>
+
+<!-- Supabase CDN и глобален клиент -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="app.js"></script>
+
+<script>
+  // Примерна страница, която показва списък с материали от таблица "materials"
+  // Увери се, че съществува таблица public.materials с колони id, name, quantity
+  async function loadMaterials() {
+    if (!window.sb) {
+      document.getElementById('status').innerText = 'Supabase клиентът не е инициализиран';
+      return;
+    }
+
+    // Проверка за потребител
+    const { data: { user } } = await window.sb.auth.getUser().catch(() => ({ data: { user: null } }));
+    if (!user) {
+      document.getElementById('status').innerText = 'Моля, влезте за да видите материалите.';
+      return;
+    }
+
+    document.getElementById('status').innerText = `Здравей, ${user.email}. Зареждам материали...`;
+
+    try {
+      const { data, error } = await window.sb
+        .from('materials')
+        .select('id, name, quantity')
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching materials:', error);
+        document.getElementById('status').innerText = 'Грешка при зареждане на материали';
+        return;
+      }
+
+      const list = document.getElementById('materialsList');
+      list.innerHTML = '';
+      if (!data || data.length === 0) {
+        document.getElementById('status').innerText = 'Няма налични материали.';
+        return;
+      }
+
+      data.forEach(m => {
+        const li = document.createElement('li');
+        li.innerText = `${m.name} — количество: ${m.quantity ?? '—'}`;
+        list.appendChild(li);
+      });
+
+      document.getElementById('status').innerText = `Показани ${data.length} материала.`;
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      document.getElementById('status').innerText = 'Грешка при зареждане';
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    if (!window.sb) return;
+    await window.sb.auth.signOut();
+    window.location.href = 'index.html';
+  });
+
+  // Зареждаме материалите
+  loadMaterials();
+</script>
+
+</body>
+</html>
