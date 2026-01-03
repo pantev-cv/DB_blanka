@@ -12,6 +12,25 @@
 <a href="login.html">Вход</a><br>
 <a href="materials.html">Материали</a>
 
+<!-- Supabase CDN и глобален клиент -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script src="app.js"></script>
+
+<!-- Малко клиентско поведение (опционално) -->
+<script>
+  // Пример: показва дали потребителят е влязъл
+  (async function checkAuth() {
+    if (!window.sb) return;
+    const { data: { user } } = await window.sb.auth.getUser().catch(() => ({ data: { user: null } }));
+    const hdr = document.createElement('p');
+    if (user) {
+      hdr.innerText = `Влязъл: ${user.email}`;
+    } else {
+      hdr.innerText = 'Не сте влезли.';
+    }
+    document.body.insertBefore(hdr, document.body.firstChild);
+  })();
+</script>
+
 </body>
 </html>
